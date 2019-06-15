@@ -1,0 +1,78 @@
+
+//Carrega a biblioteca do sensor ultrassonico
+#include <Ultrasonic.h>
+#include <NewTone.h>
+
+//Define os pinos para o trigger e echo
+#define pino_echo_esquerda 6
+#define pino_trigger_esquerda 7
+
+#define pino_echo_direita 8
+#define pino_trigger_direita 9
+
+#define pino_echo_frontal 10
+#define pino_trigger_frontal 11
+
+#define pino_buzzer_esquerda 2
+#define pino_buzzer_direita 3
+#define pino_buzzer_frontal 4
+
+//Inicializa o sensor nos pinos definidos acima
+Ultrasonic ultrasonicFrontal(pino_trigger_frontal, pino_echo_frontal);
+Ultrasonic ultrasonicDireita(pino_trigger_direita, pino_echo_direita);
+Ultrasonic ultrasonicEsquerda(pino_trigger_esquerda, pino_echo_esquerda);
+
+void tocaSensor(int buzzer, float distancia) {
+  Serial.println(buzzer);
+  Serial.println(distancia);
+  if (distancia < 35) {
+//    println("toca tal ");
+        digitalWrite(buzzer, HIGH);
+      return;
+
+    }
+        digitalWrite(buzzer, LOW);
+}
+
+
+void setup()
+{
+  pinMode(pino_buzzer_esquerda, OUTPUT);
+  pinMode(pino_buzzer_direita, OUTPUT);
+  pinMode(pino_buzzer_frontal, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Lendo dados do sensor...");
+}
+
+void loop()
+{
+  //Le as informacoes do sensor, em cm e pol
+  float cmMsecFrontal, cmMsecDireita, cmMsecEsquerda;
+  long microsec = ultrasonicFrontal.timing();
+  cmMsecFrontal = ultrasonicFrontal.convert(microsec, Ultrasonic::CM);
+
+  tocaSensor(pino_buzzer_frontal, cmMsecFrontal);
+
+
+  microsec = ultrasonicDireita.timing();
+  cmMsecDireita = ultrasonicDireita.convert(microsec, Ultrasonic::CM);
+  tocaSensor(pino_buzzer_direita, cmMsecDireita);
+
+  microsec = ultrasonicEsquerda.timing();
+  cmMsecEsquerda = ultrasonicEsquerda.convert(microsec, Ultrasonic::CM);
+  tocaSensor(pino_buzzer_esquerda, cmMsecEsquerda);
+
+
+
+
+  //Exibe informacoes no serial monitor
+  Serial.print("Distancia em cm Frontal: ");
+  Serial.println(cmMsecFrontal);
+
+  Serial.print("Distancia em cm Direita: ");
+  Serial.println(cmMsecDireita);
+  Serial.print("Distancia em cm Esquerda: ");
+  Serial.println(cmMsecEsquerda);
+
+  delay(1000);
+}
